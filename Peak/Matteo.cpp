@@ -103,12 +103,18 @@ long long count_lattices_under(Fraction x1, Fraction y1, Fraction x2, Fraction y
     return count_lattices(k, b, n) + y2.floor() + x2.floor() + 1;
 }
 
-long long count_lattices_on(Fraction x1, Fraction y1, Fraction x2, Fraction y2) {
-    long long m = std::lcm(y1.q, y2.q);
-    long long yy1 = y1.p * m / y1.q;
-    long long yy2 = y2.p * m / y2.q;
+// TODO: Chestia asta ar trebui facuta in O(1) sau O(log) dar nu sunt capabil la ora asta
+long long count_lattices_on(Fraction x1, Fraction x2, int a, int b) {
+    long long ans = 0;
+    for (int i = 1; i <= x2.p; i++)
+        if (i * a % b == 0)
+            ans++;
 
-    return __gcd(x2.p - x1.p, yy2 - yy1) + 1;
+    for (int i = 1; i < x1.p; i++)
+        if (i * a % b == 0)
+            ans--;
+
+    return ans;
 }
 
 int main() {
@@ -117,10 +123,23 @@ int main() {
     while (q--) {
         long long a, b, c, d, s, t;
         cin >> a >> b >> c >> d >> s >> t;
+
+        if (s == t) {
+            long long l = (long long) a * s / b;
+            long long r = (long long) c * s / d;
+
+            if (a * s % b != 0) 
+                l++;
+
+            cout << r - l + 1 << '\n';
+            continue;
+        }
+
         // f(x) = (a/b) * x
         // g(x) = (c/d) * x
         Fraction x1(s, 1), y1(a * s, b);
         Fraction x2(t, 1), y2(a * t, b);
+        long long ans0 = count_lattices_on(x1, x2, a, b);
         long long ans1 = count_lattices_under(x1, y1, x2, y2);
         // cout << "Lattice points on/under a/b: " << count_lattices_under(x1, y1, x2, y2) << '\n';
 
@@ -129,8 +148,8 @@ int main() {
         long long ans2 = count_lattices_under(x1, y1, x2, y2);
         // cout << "Lattice points on/under c/d: " << count_lattices_under(x1, y1, x2, y2) << '\n';
 
-        // cout << "Lattice points on c/d: " << count_lattices_on(x1, y1, x2, y2) << '\n';
-        cout << ans2 - ans1 + count_lattices_on(x1, y1, x2, y2) << '\n';
+        // cout << "Lattice points on a/b: " << ans0 << '\n';
+        cout << ans2 - ans1 + ans0 << '\n';
     }
 
     return 0;
