@@ -8,7 +8,7 @@ namespace Generator {
     std::vector<int> generateRandomVector(int size, int MIN_VAL = 1, int MAX_VAL = MAX_T) {
         std::vector<int> v;
         for (int i = 0; i < size; i++)
-            v.push_back(rand(1, MAX_VAL));
+            v.push_back(rand(MIN_VAL, MAX_VAL));
 
         return v;
     }
