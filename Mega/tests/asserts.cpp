@@ -4,52 +4,44 @@ const int MAX_N = 2e5;
 const int MAX_M = 2e5;
 const int MAX_T = 1e9;
 
-void check_correctness(int subtask, long long n, int q, std::vector<std::pair<long long, long long>> &vq) {
-    assert(1 <= n && n <= NMAX);
-    assert(1 <= q && q <= Q);
+void check_correctness(int subtask, int n, int m, std::vector<int> &t) {
+    assert(1 <= n && n <= MAX_N);
+    assert(1 <= m && m <= MAX_M);
 
-    for (auto i : vq)
-        assert(i.first <= i.second && 1 <= i.first && i.first <= n && 1 <= i.second && i.second <= n);
+    for (auto ti : t)
+        assert(1 <= ti && ti <= MAX_T);
 
     switch (subtask) {
         case 1:
-            assert(n <= 9);
+            assert(m < n);
             break;
 
         case 2:
-            assert(n <= 17);
+            assert(m == n);
             break;
 
         case 3:
-            assert(q == 1);
+            assert(n == 1);
             break;
 
         case 4:
-            for (int i = 0; i < q; i++)
-                assert(vq[i].second == n);
+            for (int i = 1; i < m; i++)
+                assert(t[i] == t[i - 1]);
             break;
 
         case 5:
-            assert(n <= 1000000);
-
-            sort(vq.begin(), vq.end());
-            for (int i = 2; i < vq.size(); i++)
-                assert(vq[i - 1].second < vq[i].first);
-
-            break;
-
-        case 6:
-            assert(n <= 1000000);
+            assert(m <= 2000);
             break;
     }
 }
 
+const int SUBTASKS = 6;
 int main() {
-    int number_of_tests[] = {0, 3, 5, 4, 6, 6, 5, 18};
+    int number_of_tests[SUBTASKS + 1] = {0, 5, 5, 5, 5, 5, 5};
     std::ifstream in;
 
-    for (int subtask = 1; subtask <= 7; subtask++) {
-        std::string filename = "Full/Subtask_", currdir;
+    for (int subtask = 1; subtask <= SUBTASKS; subtask++) {
+        std::string filename = "Subtask_", currdir;
         filename += std::to_string(subtask);
         filename += "/";
 
@@ -68,23 +60,22 @@ int main() {
             // -------------------------------------------------------------------------
             //                               FILE READING
             // -------------------------------------------------------------------------
-            long long n;
-            int q;
-            std::vector<std::pair<long long, long long>> vq;
-            in >> n >> q;
-            vq.resize(q);
+            int n, m;
+            std::vector<int> t;
+            in >> n >> m;
+            t.resize(m);
 
-            for (int i = 0; i < q; i++)
-                in >> vq[i].first >> vq[i].second;
+            for (int i = 0; i < m; i++)
+                in >> t[i];
 
             int x;
-            while (in >> x) // nu exista mai multe numere de atat in vector
+            while (in >> x)         // nu exista mai multe numere de atat in vector
                 assert(false);
 
             // -------------------------------------------------------------------------
             //                                  ASSERTS
             // -------------------------------------------------------------------------
-            check_correctness(subtask, n, q, vq);
+            check_correctness(subtask, n, m, t);
 
             in.close();
         }
