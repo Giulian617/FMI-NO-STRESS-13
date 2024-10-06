@@ -98,7 +98,7 @@ int main()
 	fgets(s, NMAX, stdin);
 	for(i = 0;i < N - 1 - i;++i)
 		std::swap(s[i], s[N - 1 - i]);
-	last = s[N];
+	last = s[N - 1];
 	S.init(N - 1, s);
 
 	printf("%c", S.query()(last));

@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 	int probInc=opt<int>("probInc");
 
 	int i, k, currRep;
-	int currPlay=rnd.next(0, 3);
+	int currPlay=rnd.next(0, 2);
 	const char plays[4]="PFH";
 
 	printf("%d %d\n", N, Q);
@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
 
 	for(;Q;)
 	{
-		k=rnd.next(0, N);
+		k=rnd.next(0, N-1);
 		while(k && v[k-1]==v[k])
 			--k;
 
-		if(k+maxRep<N && v[k+maxRep]==v[k] && k+maxRep*2<N && v[k+maxRep*2]==v[k] && rnd.next(0, 100)<probInc)
+		if(k+maxRep<N && v[k+maxRep]==v[k] && k+maxRep*2<N && v[k+maxRep*2]==v[k] && rnd.next(0, 99)<probInc)
 		{
 			currPlay=(v[k]=='P'?1:(v[k]=='F'?2:0));
 			for(i=0;i<maxRep && Q && k+i+maxRep<N;++i)
