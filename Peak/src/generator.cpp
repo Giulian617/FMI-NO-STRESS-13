@@ -9,19 +9,21 @@ int randint(int a, int b) {
 }
 
 int main() {
+    // int q = randint(1, 100000);
     int q = 1;
     cout << q << '\n';
 
     while (q--) {
-        int a = randint(1, 1000);
-        int b = randint(1, 1000);
-        int c = randint(1, 1000);
-        int d = randint(1, 1000);
-        int s = randint(1, 1000);
-        int t = randint(1, 1000);
+        int a = randint(1, 10);
+        int b = randint(1, 5);
+        int c = randint(1, 10);
+        int d = randint(1, 5);
+        int g = std::lcm(b, d);
+        int s = randint(1, 50 / g) * g;
+        int t = randint(1, 50 / g) * g;
         
         // make sure a/b < c/d
-        if (a * d > b * c) {
+        if (1LL * a * d > 1LL * b * c) {
             swap(a, c);
             swap(b, d);
         }

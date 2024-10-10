@@ -2,17 +2,28 @@
 
 using namespace std;
 
+long long max1, max2;
 struct Fraction {
     long long p, q;
 
     Fraction() : p(0), q(1) {}
 
     Fraction(long long p, long long q) : p(p), q(q) { 
-        simplify(); 
+        max1 = max(max1, p);
+        max2 = max(max2, q);
+        if (p % q == 0) {
+            p /= q;
+            q = 1;
+        }
+        // simplify(); 
     }
 
     Fraction(long long p, const Fraction &q) {
-        *this = Fraction(p * q.q, q.p);
+        if (p % q.p == 0) {
+            *this = Fraction(p / q.p * q.q, 1);
+        } else {
+            *this = Fraction(p * q.q, q.p);
+        }
     }
 
     Fraction(const Fraction &numerator, const Fraction &denominator) {
@@ -25,10 +36,6 @@ struct Fraction {
         q /= g;
     }
 
-    void print() {
-        cout << "(" << p << ", " << q << ")\n";
-    }
-
     long long ceil() {
         return (p + q - 1) / q;
     }
@@ -37,22 +44,42 @@ struct Fraction {
         return p / q;
     }
 
-    bool operator >= (const int &oth) const {
+    bool operator >= (const long long &oth) const {
+        if (p / q >= oth) return true;
         return p >= q * oth;
     }
 
     Fraction& operator -= (const long long &oth) {
         p -= oth * q;
-        simplify();
         return *this;
     }
 
     Fraction operator * (const long long &n) const {
+        if (n % q == 0) 
+            return Fraction(p * (n / q), 1);
         return Fraction(p * n, q);
     }
 
     Fraction operator * (const Fraction &oth) const {
-        return Fraction(p * oth.p, q * oth.q);
+        Fraction x = *this, y = oth;
+        if (x.p == 0 || y.p == 0) return Fraction(0, 1);
+        if (x.p % y.q == 0) {
+            x.p /= y.q;
+            y.q = 1;
+        }
+        if (x.q % y.p == 0) {
+            x.q /= y.p;
+            y.p = 1;
+        }
+        if (y.p % x.q == 0) {
+            y.p /= x.q;
+            x.q = 1;
+        }
+        if (y.q % x.p == 0) {
+            y.q /= x.p;
+            x.p = 1;
+        }
+        return Fraction(x.p * y.p, x.q * y.q);
     }
 
     Fraction operator + (const Fraction &oth) const {
@@ -72,7 +99,7 @@ struct Fraction {
     }
 
     Fraction operator / (const Fraction &oth) const {
-        return Fraction(p * oth.q, q * oth.p);
+        return (*this * Fraction(oth.q, oth.p));
     }
 };
 
@@ -103,21 +130,17 @@ long long count_lattices_under(Fraction x1, Fraction y1, Fraction x2, Fraction y
     return count_lattices(k, b, n) + y2.floor() + x2.floor() + 1;
 }
 
-// TODO: Chestia asta ar trebui facuta in O(1) sau O(log) dar nu sunt capabil la ora asta
 long long count_lattices_on(Fraction x1, Fraction x2, int a, int b) {
-    long long ans = 0;
-    for (int i = 1; i <= x2.p; i++)
-        if (i * a % b == 0)
-            ans++;
-
-    for (int i = 1; i < x1.p; i++)
-        if (i * a % b == 0)
-            ans--;
-
-    return ans;
+    // Panta este a/b
+    // Astfel, vor exista puncte intregi din b / (a, b) in b / (a, b)
+    int g = __gcd(a, b);
+    b = b / g;
+    return (x2.p / b - x1.p / b + (x1.p % b == 0));
 }
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
     int q;
     cin >> q;
     while (q--) {

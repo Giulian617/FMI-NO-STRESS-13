@@ -13,7 +13,7 @@ int main() {
             long long l = (long long) a * y / b;
             long long r = (long long) c * y / d;
 
-            if (a * y % b != 0) 
+            if ((long long)a * y % b != 0) 
                 l++;
 
             // cout << y << ' ' << l << ' ' << r << '\n';

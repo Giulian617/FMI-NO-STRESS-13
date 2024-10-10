@@ -1,7 +1,7 @@
 #!/bin/bash
 
-optimized="./bin/Matteo"
-brute="./bin/brut"
+optimized="./bin/Pick"
+brute="./bin/Matteo"
 generator="./bin/generator"
 
 current_test=1
