@@ -17,12 +17,21 @@
 ./generator_random -N "5000" -Q "5000" "fee;aefob" > ./tests/test_305.in
 ./phf < ./tests/test_305.in > ./tests/test_305.out
 
-./generator_random -N "500000" -Q "100000" "dknfaoen j dajn" > ./tests/test_306.in
+./generator_random -N "30000" -Q "30000" "vjdnhdsbfn" > ./tests/test_306.in
 ./phf < ./tests/test_306.in > ./tests/test_306.out
 
-./generator_random -N "900000" -Q "100000" "kdmngojabondfk k" > ./tests/test_307.in
+./generator_random -N "20000" -Q "50000" "vdslndjfa" > ./tests/test_307.in
 ./phf < ./tests/test_307.in > ./tests/test_307.out
 
-./generator_random -N "1000000" -Q "100000" "dasdfkn3810h" > ./tests/test_308.in
+./generator_random -N "50000" -Q "20000" "fkniusehn" > ./tests/test_308.in
 ./phf < ./tests/test_308.in > ./tests/test_308.out
+
+./generator_random -N "500000" -Q "100000" "dknfaoen j dajn" > ./tests/test_309.in
+./phf < ./tests/test_309.in > ./tests/test_309.out
+
+./generator_random -N "900000" -Q "100000" "kdmngojabondfk k" > ./tests/test_310.in
+./phf < ./tests/test_310.in > ./tests/test_310.out
+
+./generator_random -N "1000000" -Q "100000" "dasdfkn3810h" > ./tests/test_311.in
+./phf < ./tests/test_311.in > ./tests/test_311.out
 
