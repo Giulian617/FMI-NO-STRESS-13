@@ -1,0 +1,38 @@
+#include<cstdio>
+#include<cmath>
+using namespace std;
+int main()
+{
+    int n,x,cnt=0;
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&x);
+        int d=2, e, goal=-1;
+        bool okay=true;
+        while(d*d<=x)
+        {
+            e=0;
+            while(x%d==0)
+            {
+                x/=d;
+                e++;
+            }
+            if(e)
+            {
+                if(goal==-1)
+                    goal=e;
+                if(e!=goal)
+                {
+                    okay=false;
+                    break;
+                }
+            }
+            d+= d==2 ? 1 : 2;
+        }
+        if(x>1&&goal>1) okay=false;
+        cnt += okay == true ? 1 : 0;
+    }
+    printf("%d",(int)floor(1.0*cnt/n*100));
+    return 0;
+}

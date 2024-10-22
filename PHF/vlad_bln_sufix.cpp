@@ -1,3 +1,4 @@
+// Vlad
 #include <iostream>
 #include <string>
 #include <vector>
@@ -44,6 +45,7 @@ int main() {
   }
 
   auto winner = get_answer(S.c_str());
+  cout << who[winner];
   for (int q = 0; q < Q; q++) {
     int pos;
     char c;

@@ -1,0 +1,82 @@
+#include<cstdio>
+#include<vector>
+#include<cmath>
+#include<climits>
+using namespace std;
+int sp[505][505];
+double eps=0.e-5;
+struct Coord
+{
+    double x, y;
+};
+vector<Coord> GetIntersections(Coord a, Coord b)
+{
+    vector<Coord> intersections;
+    double m=(b.y - a.y)/(b.x - a.x);
+    intersections.push_back(a);
+    int start =ceil(a.y), end =floor(b.y);
+    if(fabs(start-a.y)<=eps) start++;
+    if(fabs(end-b.y)<=eps) end--;
+    for(int y = start; y <= end; y++)
+    {
+        double x = a.x + (y - a.y) / m;
+        intersections.push_back(Coord{x, (double)y});
+    }
+    intersections.push_back(b);
+    return intersections;
+}
+
+int ComputeSum(vector<Coord> intersections)
+{
+    int s=0;
+    int low_margin_x=floor(intersections[0].x), low_margin_y=floor(intersections[0].y);
+    if(!(fabs(low_margin_y-intersections[0].y)<=eps||fabs(low_margin_x-intersections[0].x)<=eps))
+        s-=sp[(int)intersections[0].y+1][(int)ceil(intersections[0].x)]-sp[(int)intersections[0].y+1][(int)ceil(intersections[0].x)-1];
+    for(int i=0;i<intersections.size()-1;i++)
+    {
+        Coord help=intersections[i];
+        help.y+=1;
+        if(!(fabs(intersections[i+1].y-intersections[i].y)<=eps))
+        {
+            s+=sp[(int)help.y][(int)ceil(intersections[i+1].x)]-sp[(int)help.y][(int)help.x];
+        }
+    }
+    return s;
+}
+
+int main()
+{
+    freopen("test.in","r",stdin);
+    freopen("test.out","w",stdout);
+    int n,m,x;
+    scanf("%d%d",&n,&m);
+    for(int i=1;i<=n;i++)
+        for(int j=1;j<=m;j++)
+        {
+            scanf("%d",&x);
+            sp[n-i+1][j]=sp[n-i+1][j-1]+x;
+        }
+    int f,StrongestFurnica,max=INT_MIN;
+    scanf("%d\n",&f);
+    double x1,y1;
+    for(int fur=1;fur<=f;fur++)
+    {
+        double lx1=0,ly1=0;
+        int ts=0;
+        while(scanf("%lf %lf\n",&x1,&y1)!=EOF)
+        {
+            ts+=ComputeSum(GetIntersections(Coord{lx1,ly1},Coord{x1,y1}));
+            if(fabs(x1-n)<=eps && fabs(y1-m)<=eps)
+                break;
+            lx1 = x1;
+            ly1 = y1;
+        }
+        if(ts>max)
+        {
+            StrongestFurnica=fur;
+            max=ts;
+        }
+    }
+    printf("%d %d",StrongestFurnica,max);
+    return 0;
+}

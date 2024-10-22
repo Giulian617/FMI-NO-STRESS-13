@@ -5,7 +5,7 @@
 #include<numeric>
 #include<vector>
 typedef long long ll;
-const int PRECIZIE=100, NMAX=300, VALMAX=1000, QMAX=100;
+const int PRECIZIE=100, NMAX=500, VALMAX=5000, QMAX=1000;
 
 struct pct
 {
@@ -74,7 +74,7 @@ ll readDouble()
 	{
 		for(scanf("%c", &c);c>='0' && c<='9' && frac<=PRECIZIE;frac*=10, scanf("%c", &c))
 			real+=PRECIZIE/10/frac*(c-'0');
-		assert(frac<=PRECIZIE);
+		//assert(frac<=PRECIZIE);
 	}
 
 	return intreg*PRECIZIE+real;
@@ -82,75 +82,85 @@ ll readDouble()
 
 typedef void(*PF)(int, int);
 
+void orizontal(pct A, pct B, PF f)
+{
+	if(A.j%PRECIZIE && A.i%PRECIZIE)
+		f(A.i/PRECIZIE, A.j/PRECIZIE);
+	if(B.j%PRECIZIE && B.i%PRECIZIE)
+		f(B.i/PRECIZIE, B.j/PRECIZIE);
+	if(A.i%PRECIZIE)
+		for(int j=A.j/PRECIZIE+1;j<B.j/PRECIZIE;++j)
+			f(A.i/PRECIZIE, j);
+}
+
+void vertical(pct A, pct B, PF f)
+{
+	if(A.i%PRECIZIE && A.j%PRECIZIE)
+		f(A.i/PRECIZIE, A.j/PRECIZIE);
+	if(B.i%PRECIZIE && B.j%PRECIZIE)
+		f(B.i/PRECIZIE, B.j/PRECIZIE);
+	if(A.j%PRECIZIE)
+		for(int i=A.i/PRECIZIE+1;i<B.i/PRECIZIE;++i)
+			f(i, A.j/PRECIZIE);
+}
+
 void runBetween(pct A, pct B, PF f)
 {
-	if((A.i==B.i && A.i%PRECIZIE==0) || (A.j==B.j && A.j%PRECIZIE==0))
-		return;
+	assert(A.i<=B.i && A.j<=B.j);
+
+	if(A.i==B.i)
+		return orizontal(A, B, f);
+	if(A.j==B.j)
+		return vertical(A, B, f);
 
 	int di=B.i-A.i, dj=B.j-A.j, i, j;
 	int dd=std::gcd(di, dj);
 
 	di/=dd;
 	dj/=dd;
-	frac a(di, dj);
-	frac b(A.i*B.j-A.j*B.i, B.j-A.j);
+	frac a(di, dj), b;
+
+	if(di>dj)
+		std::swap(a.t, a.b);
 
 	for(int _=0;_<dd;++_, A=B)
 	{
 		B.i=A.i+di;
 		B.j=A.j+dj;
 
-		if(A.i==B.i)
+		if(B.i%PRECIZIE && B.j%PRECIZIE)
+			f(B.i/PRECIZIE, B.j/PRECIZIE);
+
+		i=A.i/PRECIZIE;
+		j=A.j/PRECIZIE;
+		f(i, j);
+
+		if(di>dj)
 		{
-			while(A.j/PRECIZIE!=B.j/PRECIZIE)
+			for(i=A.i/PRECIZIE+1;i<=B.i/PRECIZIE;++i)
 			{
-				f(A.i/PRECIZIE, A.j/PRECIZIE);
-				A.j+=PRECIZIE;
-			}
-		}
-		else if(A.j==B.j)
-		{
-			while(A.i/PRECIZIE!=B.i/PRECIZIE)
-			{
-				f(A.i/PRECIZIE, A.j/PRECIZIE);
-				A.i+=PRECIZIE;
+				b=a*frac(i*PRECIZIE-A.i, 1);
+				j=(A.j*b.b+b.t)/b.b/PRECIZIE;
+				if(i!=B.i/PRECIZIE || B.i%PRECIZIE)
+					f(i-1, j);
+				else
+					f(i-1, j-1);
+				if(i!=B.i/PRECIZIE || B.i%PRECIZIE)
+					f(i, j);
 			}
 		}
 		else
 		{
-			i=A.i/PRECIZIE;
-			j=A.j/PRECIZIE;
-			f(i, j);
-			while(i!=B.i/PRECIZIE || j!=B.j/PRECIZIE)
+			for(j=A.j/PRECIZIE+1;j<=B.j/PRECIZIE;++j)
 			{
-				/*
-				di=B.i-A.i
-				dj=B.j-A.j
-				aj+b=i
-
-				A.j*a+b=A.i
-				B.j*a+b=B.i
-				a=(B.i-A.i)/(B.j-A.j)
-				b=(A.i*B.j-A.j*B.i)/(B.j-A.j)
-				*/
-
-				if(j==B.j/PRECIZIE)
-				{
-					for(;i!=B.i/PRECIZIE;++i)
-						f(i, j);
-					A=B;
-				}
+				b=a*frac(j*PRECIZIE-A.j, 1);
+				i=(A.i*b.b+b.t)/b.b/PRECIZIE;
+				if(j!=B.j/PRECIZIE || B.j%PRECIZIE)
+					f(i, j-1);
 				else
-				{
-					frac nextI=a*frac(PRECIZIE)*frac(j+1)+b;
-					if(nextI.b!=1)
-						nextI.t+=nextI.b;
-					int i1=nextI/PRECIZIE;
-
-					for(;i<i1;++i)
-						f(i, j);
-					++j;
-				}
+					f(i-1, j-1);
+				if(j!=B.j/PRECIZIE || B.j%PRECIZIE)
+					f(i, j);
 			}
 		}
 	}
@@ -168,7 +178,11 @@ void addAnswer(int i, int j)
 void clearPath(int i, int j)
 {
 	if(i>-1 && j>-1 && i<N && j<M)
+	{
+		// if(vis[i][j])
+			// printf("(%d, %d)", i, j);
 		vis[i][j]=0;
+	}
 }
 
 ll getScore()
@@ -188,44 +202,61 @@ ll getScore()
 		runBetween(curr, next, clearPath);
 		curr=next;
 	}
+	// printf("\n");
 
 	return score;
 }
+
+/*
+5 5
+2 8 4 8 -1
+9 5 3 1 4
+10 0 10 6 7
+11 -1 7 10 9
+5 0 20 -15 8
+4
+3.8 1.2 4.6 3.66 5 5
+1.2 1.7 2.1 3.75 5 5
+0.0 4.0 3.0 4.0 3.0 5.0 5 5
+3 3 5 5
+*/
 
 int main()
 {
 	int i, j, Q, _, best;
 	ll max=-NMAX*NMAX*(ll)VALMAX, aux;
 
-	scanf("%d", &N);
-	M=N;
+	scanf("%d %d", &N, &M);
 	assert(N<=NMAX);
 	assert(M<=NMAX);
 	for(i=0;i<N;++i)
 		for(j=0;j<M;++j)
 		{
-			scanf("%d", mat[i]+j);
-			assert(std::abs(mat[i][j])<=VALMAX);
+			scanf("%d", mat[N-i-1]+j);
+			assert(std::abs(mat[N-i-1][j])<=VALMAX);
 		}
 
 	scanf("%d", &Q);
 	assert(Q<=QMAX);
 	for(_=0;_<Q;++_)
 	{
-		const pct topRight(N*PRECIZIE, M*PRECIZIE);
+		const pct topRight(M*PRECIZIE, N*PRECIZIE);
 		for(F.clear();F.empty() || F.back()!=topRight;)
 		{
-			i=readDouble();
 			j=readDouble();
+			i=readDouble();
 			F.push_back(pct(i, j));
 		}
+
+		if(F.size()==1u)
+			printf("PROBLEMA LINIA %d\n", N+_+2);
 
 		aux=getScore();
 		// printf("%d->%lld\n", _, aux);
 		if(aux>max)
 		{
 			max=aux;
-			best=_;
+			best=_ + 1;
 		}
 	}
 
